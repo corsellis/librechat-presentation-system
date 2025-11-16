@@ -11,8 +11,8 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Import presentation routes
-const presentationRoutes = require('./LIBRECHAT_API_Integration');
+// Import presentation routes (simplified version)
+const presentationRoutes = require('./presentations');
 
 // Mount presentation routes
 app.use('/api/presentations', presentationRoutes);
