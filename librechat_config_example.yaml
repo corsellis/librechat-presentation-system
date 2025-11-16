@@ -1,0 +1,116 @@
+# LibreChat Configuration - Presentation System Integration
+# Copy the relevant sections to your existing librechat.yaml
+
+version: 1.0.9
+
+# ============================================
+# CLAUDE PRESENTATIONS ENDPOINT
+# ============================================
+
+endpoints:
+  custom:
+    # Claude endpoint with presentation generation capabilities
+    - name: "Claude Presentations"
+      apiKey: "${ANTHROPIC_API_KEY}"
+      baseURL: "https://api.anthropic.com/v1"
+      
+      # Model configuration
+      models:
+        default: ["claude-sonnet-4-20250514"]
+        fetch: false
+      
+      # Conversation settings
+      titleConvo: true
+      titleModel: "claude-sonnet-4-20250514"
+      summarize: false
+      summaryModel: "claude-sonnet-4-20250514"
+      forcePrompt: false
+      modelDisplayLabel: "Claude"
+      
+      # System prompt for presentation generation
+      # Option 1: Inline prompt
+      addParams:
+        system: |
+          You are an expert presentation designer with access to a presentation generation API at /api/presentations/generate
+          
+          You create professional McKinsey-style and Marwyn-style board presentations.
+          
+          TEMPLATES:
+          1. McKinsey: Blue/teal, minimalist, analytical
+          2. Marwyn: Orange/charcoal, investment-focused
+          
+          PROCESS:
+          1. Understand user requirements
+          2. Plan presentation structure
+          3. Generate API call with proper JSON
+          4. Provide download link
+          
+          See api/presentation-system/config/claude-prompt.txt for full documentation.
+          
+      # Option 2: External file (recommended)
+      # systemMessageFile: "api/presentation-system/config/claude-prompt.txt"
+
+# ============================================
+# ALTERNATIVE: SEPARATE ENDPOINT CONFIG
+# ============================================
+
+# If you want a dedicated endpoint just for presentations:
+
+# endpoints:
+#   custom:
+#     # Your existing Claude endpoint
+#     - name: "Claude"
+#       apiKey: "${ANTHROPIC_API_KEY}"
+#       baseURL: "https://api.anthropic.com/v1"
+#       models:
+#         default: ["claude-sonnet-4-20250514"]
+#       
+#     # Separate presentation endpoint
+#     - name: "Claude - Presentations Only"
+#       apiKey: "${ANTHROPIC_API_KEY}"
+#       baseURL: "https://api.anthropic.com/v1"
+#       models:
+#         default: ["claude-sonnet-4-20250514"]
+#       systemMessageFile: "api/presentation-system/config/claude-prompt.txt"
+
+# ============================================
+# ARTIFACTS CONFIGURATION
+# ============================================
+
+# If using artifacts feature, configure bundler:
+# (Not required for basic presentation generation)
+
+fileConfig:
+  endpoints:
+    assistants:
+      fileLimit: 10
+      fileSizeLimit: 10  # MB
+      supportedMimeTypes:
+        - "application/pdf"
+        - "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+# ============================================
+# SECURITY SETTINGS
+# ============================================
+
+# Prevent search engine indexing
+registration:
+  socialLogins: []
+  
+interface:
+  privacyPolicy:
+    externalUrl: ""
+    openNewTab: false
+  termsOfService:
+    externalUrl: ""
+    openNewTab: false
+
+# ============================================
+# NOTES
+# ============================================
+
+# 1. ${ANTHROPIC_API_KEY} references your .env variable
+# 2. System prompt can be inline or external file
+# 3. External file recommended for easier updates
+# 4. Restart LibreChat after config changes
+# 5. Test with health check: curl localhost:3080/api/presentations/health
